@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QuickType - Instant Browser Text Editor</title>
+    <meta
+      name="description"
+      content="QuickType is a free, instant online text editor and scratchpad. No sign-ups, no saves, just type and your work is automatically saved to your browser. Perfect for quick notes, temporary text storage, and brainstorming."
+    />
+    <meta
+      name="keywords"
+      content="online text editor, browser notepad, quick note app, temporary text storage, online scratchpad, free text editor, markdown editor, instant editor"
+    />
+    <link rel="canonical" href="https://quicktype.netlify.app/" />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <style>
+      /* Basic Reset & Variables */
+      :root {
+        --bg-color-light: #f8f9fa;
+        --text-color-light: #212529;
+        --border-color-light: #dee2e6;
+        --bg-color-dark: #282c34;
+        --text-color-dark: #abb2bf;
+        --border-color-dark: #3a3f4a;
+        --accent-color: #007bff;
+        --font-family: "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell",
+          "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+      }
+
+      body {
+        margin: 0;
+        font-family: var(--font-family);
+        background-color: var(--bg-color-light);
+        color: var(--text-color-light);
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        transition: background-color 0.3s, color 0.3s;
+      }
+
+      body.dark-mode {
+        background-color: var(--bg-color-dark);
+        color: var(--text-color-dark);
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 25px;
+        border-bottom: 1px solid var(--border-color-light);
+        background-color: var(--bg-color-light);
+        z-index: 10; /* Ensure header is above editor */
+      }
+
+      body.dark-mode header {
+        border-bottom-color: var(--border-color-dark);
+        background-color: var(--bg-color-dark);
+      }
+
+      .logo {
+        font-size: 1.8em;
+        font-weight: bold;
+        color: var(--accent-color);
+        text-decoration: none;
+      }
+
+      .controls {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+      }
+
+      .control-button {
+        background-color: var(--accent-color);
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.9em;
+        transition: background-color 0.2s;
+      }
+
+      .control-button:hover {
+        background-color: #0056b3;
+      }
+
+      .mode-toggle {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .mode-toggle input[type="checkbox"] {
+        display: none;
+      }
+
+      .slider {
+        position: relative;
+        width: 40px;
+        height: 20px;
+        background-color: #ccc;
+        border-radius: 20px;
+        transition: background-color 0.3s;
+        margin-left: 8px;
+      }
+
+      .slider:before {
+        content: "";
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background-color: white;
+        top: 2px;
+        left: 2px;
+        transition: transform 0.3s;
+      }
+
+      input:checked + .slider {
+        background-color: var(--accent-color);
+      }
+
+      input:checked + .slider:before {
+        transform: translateX(20px);
+      }
+
+      main {
+        flex-grow: 1;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        max-width: 1000px;
+        width: 100%;
+        margin: 0 auto;
+      }
+
+      #editor {
+        width: 100%;
+        flex-grow: 1;
+        padding: 15px;
+        border: 1px solid var(--border-color-light);
+        border-radius: 8px;
+        font-size: 1.1em;
+        line-height: 1.6;
+        resize: none;
+        outline: none;
+        box-sizing: border-box;
+        background-color: var(--bg-color-light);
+        color: var(--text-color-light);
+        transition: border-color 0.3s, background-color 0.3s, color 0.3s;
+        min-height: 400px; /* Ensure a minimum height for the editor */
+      }
+
+      body.dark-mode #editor {
+        border-color: var(--border-color-dark);
+        background-color: var(--bg-color-dark);
+        color: var(--text-color-dark);
+      }
+
+      .info-message {
+        margin-top: 15px;
+        font-size: 0.9em;
+        color: #6c757d;
+        text-align: center;
+      }
+
+      body.dark-mode .info-message {
+        color: #a0a0a0;
+      }
+
+      footer {
+        padding: 15px;
+        text-align: center;
+        font-size: 0.85em;
+        color: #6c757d;
+        border-top: 1px solid var(--border-color-light);
+        margin-top: 20px; /* Add some space above the footer */
+      }
+
+      body.dark-mode footer {
+        border-top-color: var(--border-color-dark);
+        color: #a0a0a0;
+      }
+
+      @media (max-width: 600px) {
+        header {
+          flex-direction: column;
+          gap: 10px;
+          padding: 10px 15px;
+        }
+        .controls {
+          width: 100%;
+          justify-content: center;
+          gap: 10px;
+        }
+        .logo {
+          font-size: 1.5em;
+        }
+        main {
+          padding: 15px;
+        }
+        #editor {
+          min-height: 300px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a href="/" class="logo">QuickType</a>
+      <div class="controls">
+        <label class="mode-toggle">
+          <span>Dark Mode</span>
+          <input type="checkbox" id="darkModeToggle" />
+          <span class="slider"></span>
+        </label>
+        <button id="clearButton" class="control-button">Clear All</button>
+        <button id="copyButton" class="control-button">Copy All</button>
+      </div>
+    </header>
+
+    <main>
+      <textarea
+        id="editor"
+        placeholder="Start typing here... Your work saves automatically to your browser."
+      ></textarea>
+      <p class="info-message">
+        Your text is automatically saved to your browser's local storage. It
+        will be here when you return, even after closing the tab or browser. For
+        sensitive information, consider dedicated solutions.
+      </p>
+    </main>
+
+    <footer>
+      &copy; 2025 QuickType. All rights reserved. |
+      <a href="https://quicktype.netlify.app/privacy" style="color: inherit"
+        >Privacy Policy</a
+      >
+      |
+      <a href="https://quicktype.netlify.app/terms" style="color: inherit"
+        >Terms of Service</a
+      >
+    </footer>
+
+    <script>
+      const editor = document.getElementById("editor");
+      const clearButton = document.getElementById("clearButton");
+      const copyButton = document.getElementById("copyButton");
+      const darkModeToggle = document.getElementById("darkModeToggle");
+      const localStorageKey = "quicktype_content";
+      const darkModeKey = "quicktype_dark_mode";
+
+      // Load content from local storage
+      if (localStorage.getItem(localStorageKey)) {
+        editor.value = localStorage.getItem(localStorageKey);
+      }
+
+      // Save content to local storage on input
+      editor.addEventListener("input", () => {
+        localStorage.setItem(localStorageKey, editor.value);
+      });
+
+      // Clear button functionality
+      clearButton.addEventListener("click", () => {
+        if (
+          confirm(
+            "Are you sure you want to clear all your text? This action cannot be undone."
+          )
+        ) {
+          editor.value = "";
+          localStorage.removeItem(localStorageKey);
+        }
+      });
+
+      // Copy button functionality
+      copyButton.addEventListener("click", () => {
+        editor.select();
+        document.execCommand("copy");
+        // Provide visual feedback
+        const originalText = copyButton.textContent;
+        copyButton.textContent = "Copied!";
+        setTimeout(() => {
+          copyButton.textContent = originalText;
+        }, 1500);
+      });
+
+      // Dark mode functionality
+      const enableDarkMode = () => {
+        document.body.classList.add("dark-mode");
+        localStorage.setItem(darkModeKey, "enabled");
+      };
+
+      const disableDarkMode = () => {
+        document.body.classList.remove("dark-mode");
+        localStorage.setItem(darkModeKey, "disabled");
+      };
+
+      // Load dark mode preference
+      if (localStorage.getItem(darkModeKey) === "enabled") {
+        enableDarkMode();
+        darkModeToggle.checked = true;
+      } else {
+        disableDarkMode();
+        darkModeToggle.checked = false;
+      }
+
+      darkModeToggle.addEventListener("change", () => {
+        if (darkModeToggle.checked) {
+          enableDarkMode();
+        } else {
+          disableDarkMode();
+        }
+      });
+
+      // Add keyboard shortcut for dark mode (Ctrl/Cmd + Alt + D)
+      document.addEventListener("keydown", (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.altKey && e.key === "d") {
+          darkModeToggle.checked = !darkModeToggle.checked;
+          if (darkModeToggle.checked) {
+            enableDarkMode();
+          } else {
+            disableDarkMode();
+          }
+          e.preventDefault(); // Prevent browser default action
+        }
+      });
+    </script>
+  </body>
+</html>
