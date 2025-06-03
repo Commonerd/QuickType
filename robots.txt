@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://quicktypetext.netlify.app/sitemap.xml
+Sitemap: https://textquick.netlify.app/sitemap.xml
