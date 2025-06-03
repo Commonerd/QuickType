@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>QuickType - Instant Browser Text Editor</title>
+    <title>QuickTypeText - Instant Browser Text Editor</title>
     <meta
       name="description"
-      content="QuickType is a free, instant online text editor and scratchpad. No sign-ups, no saves, just type and your work is automatically saved to your browser. Perfect for quick notes, temporary text storage, and brainstorming."
+      content="QuickTypeText is a free, instant online text editor and scratchpad. No sign-ups, no saves, just type and your work is automatically saved to your browser. Perfect for quick notes, temporary text storage, and brainstorming."
     />
     <meta
       name="keywords"
@@ -214,7 +214,7 @@
   </head>
   <body>
     <header>
-      <a href="/" class="logo">QuickType</a>
+      <a href="/" class="logo">QuickTypeText</a>
       <div class="controls">
         <label class="mode-toggle">
           <span>Dark Mode</span>
@@ -254,8 +254,8 @@
       const clearButton = document.getElementById("clearButton");
       const copyButton = document.getElementById("copyButton");
       const darkModeToggle = document.getElementById("darkModeToggle");
-      const localStorageKey = "quicktype_content";
-      const darkModeKey = "quicktype_dark_mode";
+      const localStorageKey = "quicktypetext_content";
+      const darkModeKey = "quicktypetext_dark_mode";
 
       // Load content from local storage
       if (localStorage.getItem(localStorageKey)) {
